@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resultado Transcripción</title>
+</head>
+<body>
+    <h1>Imagen subida</h1>
+    <img src="{{ instance.image.url }}" width="300">
+    
+    <h2>Texto transcrito:</h2>
+    <pre>{{ instance.transcription }}</pre>
+
+    <p><a href="/subir/">Subir otra imagen</a></p>
+    <p><a href="/">Volver al inicio</a></p>
+</body>
+</html>

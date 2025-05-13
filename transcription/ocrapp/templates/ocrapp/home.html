@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Transcriptor</title>
+</head>
+<body>
+    <h1>Bienvenido a la Plataforma de Transcripción</h1>
+    <p>Esta plataforma te permitirá subir imágenes y transcribir su contenido.</p>
+    <p><a href="/subir/">Subir una imagen</a></p>
+    <p><a href="/historial/">Ver historial de imágenes</a></p>
+
+    {% if user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Cerrar sesión</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Iniciar sesión</a></p>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subir Imagen</title>
+</head>
+<body>
+    <h1>Sube una imagen para transcripción</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Subir imagen</button>
+    </form>
+    <p><a href="/">Volver al inicio</a></p>
+</body>
+</html>
