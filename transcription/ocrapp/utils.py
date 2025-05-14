@@ -10,7 +10,11 @@ def transcribe_image_with_openai(image_path,max_attempts=4):
     with open(image_path, "rb") as image_file:
         base64_image = base64.b64encode(image_file.read()).decode('utf-8')
 
-    prompt_message = "Extrae únicamente todo el texto legible de la imagen sin omitir nada. No expliques, solo devuelve el texto:"
+    prompt_message= (
+        "Extrae únicamente el texto visible en la imagen proporcionada. "
+        "Si no logras reconocer ningún texto con claridad, responde exactamente con: 'ERROR: No se pudo leer el texto.' "
+        "No expliques nada, no justifiques la respuesta, solo devuelve el texto extraído o el mensaje de error indicado."
+    )
 
     for attempt in range(1, max_attempts + 1):
         try:
@@ -31,7 +35,7 @@ def transcribe_image_with_openai(image_path,max_attempts=4):
             result = response.choices[0].message.content.strip()
 
             # Verificamos si la respuesta no es la negativa de la API
-            if result != "I'm sorry, but I can't transcribe the content of this image.":
+            if result != "ERROR: No se pudo leer el texto.":
                 return result
 
             print(f"Intento {attempt}: No se pudo transcribir, reintentando...")
