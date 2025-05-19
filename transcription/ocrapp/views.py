@@ -1,19 +1,52 @@
-from django.shortcuts import render
 
-# Create your views here.
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import ImageUploadForm
 from .models import ImageUpload
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse
+from django.urls import reverse
 from django.utils.text import slugify
 from .utils import transcribe_image_with_openai
 
 
 def home(request):
-    return render(request, 'ocrapp/home.html')
+    transcription_result = None
+    image_url = None
+
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            if request.user.is_authenticated:
+                instance.user = request.user
+            instance.save()
+
+            try:
+                instance.transcription = transcribe_image_with_openai(instance.image.path)
+            except Exception as e:
+                instance.transcription = f"❌ Error al procesar la imagen: {str(e)}"
+            instance.save()
+
+            # Redirigimos para evitar reenvío de formulario y mantener los datos
+            return redirect(f"{reverse('home')}?image_id={instance.id}")
+    else:
+        form = ImageUploadForm()
+        image_id = request.GET.get('image_id')
+        if image_id:
+            try:
+                instance = ImageUpload.objects.get(id=image_id)
+                transcription_result = instance.transcription
+                image_url = instance.image.url
+            except ImageUpload.DoesNotExist:
+                pass
+
+    return render(request, 'ocrapp/home.html', {
+        'form': form,
+        'transcription_result': transcription_result,
+        'image_url': image_url
+    })
 
 
 def upload_image(request):
@@ -68,6 +101,13 @@ def delete_image(request, image_id):
 def export_transcription(request,image_id):
     image= get_object_or_404(ImageUpload,id=image_id, user=request.user)
 
+    filename = slugify(f"transcription_{image.upload_time}") + ".txt"
+    response = HttpResponse(image.transcription, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+def export_txt(request, image_id):
+    image = get_object_or_404(ImageUpload, id=image_id, user=request.user)
     filename = slugify(f"transcription_{image.upload_time}") + ".txt"
     response = HttpResponse(image.transcription, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'

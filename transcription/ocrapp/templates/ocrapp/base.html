@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -9,11 +11,12 @@
         .section { padding: 30px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
     </style>
 </head>
+{% block extra_scripts %}{% endblock %}
 <body>
 
 <!-- Header -->
 <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
+    <div class="container-fluid" id="headertp">
         <a class="navbar-brand" href="/">Transcription Platform</a>
         <div class="collapse navbar-collapse justify-content-end">
             <ul class="navbar-nav">

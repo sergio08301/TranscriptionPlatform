@@ -1,22 +1,38 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Transcriptor</title>
-</head>
-<body>
-    <h1>Bienvenido a la Plataforma de Transcripción</h1>
-    <p>Esta plataforma te permitirá subir imágenes y transcribir su contenido.</p>
-    <p><a href="/subir/">Subir una imagen</a></p>
-    <p><a href="/historial/">Ver historial de imágenes</a></p>
+{% extends "ocrapp/base.html" %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% block content %}
+<body class="custom-background">
+    <h1>Subir Imagen para Transcripción</h1>
+    <form method="post" enctype="multipart/form-data" onsubmit="showSpinner()">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" id="submitBtn" class="btn btn-primary mt-2">Subir Imagen</button>
+    </form>
 
-    {% if user.is_authenticated %}
-        <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button type="submit">Cerrar sesión</button>
-        </form>
-    {% else %}
-        <p><a href="{% url 'login' %}">Iniciar sesión</a></p>
+    <!-- Spinner -->
+    <div id="spinner" class="spinner"></div>
+
+    <!-- Mostrar Imagen y Transcripción -->
+    {% if image_url %}
+    <div class="card p-3 my-4" style="background-color: rgba(255, 255, 255, 0.8); border-radius: 15px;">
+        <h2>Imagen Procesada:</h2>
+        <img src="{{ image_url }}" width="300" class="img-thumbnail">
+
+        <h2>Transcripción:</h2>
+        <pre class="transcription-text">{{ transcription_result }}</pre>
+    </div>
     {% endif %}
+
+    <a href="{% url 'history' %}" class="btn btn-secondary mt-3">📖 Ver Historial</a>
 </body>
-</html>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function showSpinner() {
+        document.getElementById('spinner').style.display = 'block';
+        document.getElementById('submitBtn').disabled = true;
+    }
+</script>
+{% endblock %}
