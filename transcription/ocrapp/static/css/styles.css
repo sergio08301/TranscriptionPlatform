@@ -1,17 +1,36 @@
 body {
-    background-image: url("../book bg.jpg");  /* Ajustar según la ruta real */
+    background-image: url("../book_bg.jpg");  /* Ajustar según la ruta real */
     background-size: cover;
     background-position: center;
+    margin: 0;
+    padding: 0;
 }
 
+/* Fondo translúcido general, sin afectar la navbar */
 body::before {
     content: "";
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-color: rgba(255, 255, 255, 0.5);  /* Blanco con 50% de opacidad */
     z-index: -1;
+    pointer-events: none;  /* No bloquea interacciones ni visualización de la navbar */
 }
+
+/* Navbar personalizada con fondo crema sólido */
+.navbar-custom {
+    background-color: #f5f5dc !important;  /* Color crema sólido */
+    z-index: 9999 !important;              /* Garantiza que queda encima */
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    backdrop-filter: none;  /* Elimina cualquier desenfoque o transparencia */
+}
+
 /* Spinner */
 .spinner {
     border: 8px solid #f3f3f3;
@@ -22,6 +41,11 @@ body::before {
     animation: spin 1s linear infinite;
     margin: 20px auto;
     display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000; /* Asegura que el spinner está siempre por encima */
 }
 
 @keyframes spin {
@@ -38,5 +62,17 @@ body::before {
     background: rgba(255, 255, 255, 0.8);
     padding: 15px;
     border-radius: 10px;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
+/* Section Container for Grouped Content */
+.section-container {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px 0;
+    box-shadow: 0 0 10px #ccc;
+    max-width: 600px;
+    text-align: center;
+}

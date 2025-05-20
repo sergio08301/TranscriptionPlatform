@@ -78,18 +78,15 @@ def upload_image(request):
 
 
 def history(request):
-    if not request.user.is_authenticated:
-        return render(request, 'ocrapp/history_guest.html')
+    page_obj = None
 
-    images_list = ImageUpload.objects.filter(user=request.user).order_by('-upload_time')
-    paginator = Paginator(images_list, 5)  # 5 imágenes por página (puedes ajustar el número)
-
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    if request.user.is_authenticated:
+        images_list = ImageUpload.objects.filter(user=request.user).order_by('-upload_time')
+        paginator = Paginator(images_list, 5)  # 5 imágenes por página
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
 
     return render(request, 'ocrapp/history.html', {'page_obj': page_obj})
-
-from django.shortcuts import get_object_or_404, redirect
 
 @login_required
 def delete_image(request, image_id):

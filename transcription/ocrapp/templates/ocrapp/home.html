@@ -3,28 +3,39 @@
 <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 {% block content %}
 <body class="custom-background">
+ <div class="card p-3 my-4" style="background-color: rgba(255, 255, 255, 0.8); border-radius: 15px;">
     <h1>Subir Imagen para Transcripción</h1>
-    <form method="post" enctype="multipart/form-data" onsubmit="showSpinner()">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" id="submitBtn" class="btn btn-primary mt-2">Subir Imagen</button>
-    </form>
+     <br>
+        <div class="d-flex justify-content-center">
+            <form method="post" enctype="multipart/form-data" onsubmit="showSpinner()" class="text-center">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <br>
+                <button type="submit" id="submitBtn" class="btn btn-primary mt-3">Subir Imagen</button>
+            </form>
+        </div>
+</div>
+
 
     <!-- Spinner -->
     <div id="spinner" class="spinner"></div>
-
+</div>
     <!-- Mostrar Imagen y Transcripción -->
-    {% if image_url %}
-    <div class="card p-3 my-4" style="background-color: rgba(255, 255, 255, 0.8); border-radius: 15px;">
+{% if image_url %}
+<div class="d-flex justify-content-center mt-4">
+    <div class="card p-4" style="background-color: rgba(255, 255, 255, 0.8); border-radius: 15px; text-align: center; max-width: 600px;">
         <h2>Imagen Procesada:</h2>
-        <img src="{{ image_url }}" width="300" class="img-thumbnail">
+        <img src="{{ image_url }}" width="300" class="img-thumbnail mb-3 mx-auto d-block">
 
         <h2>Transcripción:</h2>
         <pre class="transcription-text">{{ transcription_result }}</pre>
     </div>
-    {% endif %}
+</div>
+{% endif %}
 
-    <a href="{% url 'history' %}" class="btn btn-secondary mt-3">📖 Ver Historial</a>
+    <div class="d-flex justify-content-center mt-4">
+        <a href="{% url 'history' %}" class="btn btn-secondary btn-lg">📖 Ver Historial</a>
+    </div>
 </body>
 {% endblock %}
 

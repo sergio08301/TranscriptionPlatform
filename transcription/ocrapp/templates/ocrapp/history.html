@@ -1,83 +1,84 @@
-<!DOCTYPE html>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+{% extends "ocrapp/base.html" %}
+{% load static %}
+{% block content %}
+<div class="d-flex justify-content-center mt-4">
+    <div class="card p-4" style="background-color: rgba(255, 255, 255, 0.8); border-radius: 15px; max-width: 1000px; width: 100%;">
+        <h1 class="text-center mb-4">Historial</h1>
 
-<html>
-<head>
-    <title>Historial de imágenes</title>
-</head>
-<body class="container mt-4">
-    <h1>Historial de Imágenes</h1>
+        {% if user.is_authenticated %}
+            {% if page_obj %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Fecha de Subida</th>
+                            <th>Transcripción</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for image in page_obj %}
+                            <tr>
+                                <td>{{ image.upload_time|date:"d M Y, H:i" }}</td>
+                                <td><pre>{{ image.transcription|truncatechars:100 }}</pre></td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#imageModal{{ image.id }}">
+                                        Ver Imagen
+                                    </button>
+                                    <form action="{% url 'delete_image' image.id %}" method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que quieres eliminar esta imagen?')">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                    <a href="{% url 'export_transcription' image.id %}" class="btn btn-secondary btn-sm">
+                                        Exportar TXT
+                                    </a>
 
-    {% if page_obj %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Fecha de Subida</th>
-                    <th>Transcripción</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for image in page_obj %}
-                    <tr>
-                        <td>{{ image.upload_time|date:"d M Y, H:i" }}</td>
-                        <td><pre>{{ image.transcription|truncatechars:100 }}</pre></td>
-                        <td>
-                            <!-- Botón para ver la imagen -->
-                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#imageModal{{ image.id }}">
-                                Ver Imagen
-                            </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="imageModal{{ image.id }}" tabindex="-1" aria-labelledby="imageModalLabel{{ image.id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="imageModalLabel{{ image.id }}">
+                                                        Imagen subida el {{ image.upload_time|date:"d M Y, H:i" }}
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                </div>
+                                                <div class="modal-body text-center">
+                                                    <img src="{{ image.image.url }}" class="img-fluid">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
 
-                            <!-- Botón para eliminar -->
-                            <form action="{% url 'delete_image' image.id %}" method="post" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que quieres eliminar esta imagen?')">Eliminar</button>
-                            </form>
-                            <!-- Botón para exportar transcripción -->
-                            <a href="{% url 'export_transcription' image.id %}" class="btn btn-secondary btn-sm">
-                                Exportar TXT
-                            </a>
+                <!-- Paginación -->
+                <div class="d-flex justify-content-between">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">Primera</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                    {% endif %}
+                    <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">Última</a>
+                    {% endif %}
+                </div>
 
-                            <!-- Modal de la imagen -->
-                            <div class="modal fade" id="imageModal{{ image.id }}" tabindex="-1" aria-labelledby="imageModalLabel{{ image.id }}" aria-hidden="true">
-                              <div class="modal-dialog">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h5 class="modal-title" id="imageModalLabel{{ image.id }}">Imagen subida el {{ image.upload_time|date:"d M Y, H:i" }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                  </div>
-                                  <div class="modal-body text-center">
-                                    <img src="{{ image.image.url }}" class="img-fluid">
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <!-- Paginación -->
-        <div class="d-flex justify-content-between">
-            {% if page_obj.has_previous %}
-                <a href="?page=1">Primera</a>
-                <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            {% else %}
+                <p class="text-center">No hay imágenes subidas todavía.</p>
             {% endif %}
+        {% else %}
+            <p class="text-center">Debes <a href="{% url 'login' %}">iniciar sesión</a> para ver tu historial de imágenes.</p>
+        {% endif %}
 
-            <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
-
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}">Última</a>
-            {% endif %}
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-secondary btn-lg">Volver al inicio</a>
         </div>
-
-    {% else %}
-        <p>No hay imágenes subidas todavía.</p>
-    {% endif %}
-
-    <p><a href="/">Volver al inicio</a></p>
-</body>
-</html>
+    </div>
+</div>
+{% endblock %}
