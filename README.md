@@ -7,3 +7,6 @@ Si el usuario esta logueado puede acceder a un historial donde podrá ver el res
 ha subido. Puede ver las fechas, una preview de la transcripción, la propia imagen, tambien puede
 exportar como txt la transcripción o eliminar esta entrada del registro. En caso del usuario no 
 estar logueado no podrá acceder a este historial.
+![Image](https://github.com/user-attachments/assets/2937735f-0faf-4027-b904-b3f7167a1572)
+![Image](https://github.com/user-attachments/assets/8866b514-db53-4d67-9e7f-1d823aaf0599)
+![Image](https://github.com/user-attachments/assets/c991088e-d62b-4ef5-b2cc-60834ef81a3a)
